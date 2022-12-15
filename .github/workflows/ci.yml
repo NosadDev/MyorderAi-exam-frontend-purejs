@@ -1,0 +1,62 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+   branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+ build:
+   name: Build
+   runs-on: self-hosted
+   steps:
+     - name: Login to Private Container Registry
+       uses: docker/login-action@v2
+       with:
+         registry: registry.nosad.dev
+         username: ${{ secrets.REGISTRY_USERNAME }}
+         password: ${{ secrets.REGISTRY_PASSWORD }}
+
+     - name: Build and push Docker image
+       uses: docker/build-push-action@v3
+       with:
+         push: true
+         tags: |
+           registry.nosad.dev/${{ secrets.REGISTRY_USERNAME }}/shorturl-frontend-purejs:latest
+           registry.nosad.dev/${{ secrets.REGISTRY_USERNAME }}/shorturl-frontend-purejs:${{ github.sha }}
+ deploy-dev:
+   environment: development
+   needs: [build]
+   name: Deploy-dev
+   runs-on: self-hosted
+   steps:
+     - name: Set Kubernetes context
+       uses: Azure/k8s-set-context@v2
+       with:
+         method: kubeconfig
+         kubeconfig: ${{ secrets.KUBE_CONFIG }}
+     - name: Trigger Restart and pull new image
+       run: kubectl rollout restart deployment shorturl-frontend-purejs-deployment --namespace=dev
+
+ deploy-prod:
+   environment: production
+   needs: [build,deploy-dev]
+   name: Deploy-prod
+   runs-on: self-hosted
+   steps:
+     - name: Set Kubernetes context
+       uses: Azure/k8s-set-context@v2
+       with:
+         method: kubeconfig
+         kubeconfig: ${{ secrets.KUBE_CONFIG }}
+     - name: Trigger Restart and pull new image
+       run: kubectl rollout restart deployment shorturl-shorturl-frontend-purejs-deployment --namespace=prod
