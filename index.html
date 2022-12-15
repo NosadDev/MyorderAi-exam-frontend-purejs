@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Short URL</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>
+    <div class="flex flex-col min-h-[100vh] w-full p-2 justify-center items-center">
+        <div class="flex-row mx-auto mb-4">
+            <span class="text-5xl text-white font-bold">Short</span>
+            <span class="font-bold bg-blue-400 text-white rounded-lg text-5xl px-4 mx-2">URL</span>
+        </div>
+        <div id="error" class="hidden flex-row mb-3 px-2 bg-red-200 rounded-md shadow-md">
+            Something went wrong. Please try again later.
+        </div>
+        <div class="flex-row w-full mb-2">
+            <form class="flex justify-center w-full" action="" onsubmit="event.preventDefault();shortenURL()">
+                <input id="url" type="text"
+                    class="w-[50%] md:w-[20%] h-[3rem] mx-2 px-4 text-lg rounded-lg shadow-md outline-none focus:ring focus:ring-blue-300"
+                    placeholder="Enter url here" required="required" minlength="3" />
+                <button class="h-[3rem] p-2 bg-blue-500 font-bold text-sm md:text-base rounded-lg text-white">
+                    Shorten URL
+                </button>
+            </form>
+        </div>
+        <div id="result" class="hidden flex-row justify-center bg-white rounded-md p-2">
+            <div class="flex-row flex items-center bg-white rounded-md my-1">
+                <span class="w-[25%] text-center bg-gray-200 font-semibold" rsc>Original</span>
+                <input class="w-[50%] bg-gray-200 focus:ring-2 truncate" type="text"
+                    onclick="setClipboard(event.target.value)" id="original-url" readonly title="Click to Copy" rsc />
+                <button onclick="copyURL('original-url')" class="bg-gray-200" title="Copy URL" rsc bic>
+                    <span class="material-icons">content_copy</span>
+                </button>
+                <button onclick="openURL('original-url')" class="bg-gray-200" title="Open in New tab" rsc bic>
+                    <span class="material-icons">open_in_new</span>
+                </button>
+            </div>
+            <div class="flex-row flex items-center bg-white rounded-md my-1">
+                <span class="w-[25%] text-center bg-gray-200 font-semibold" rsc>Shorten</span>
+                <input class="w-[50%] bg-gray-200 focus:ring-2 truncate" type="text"
+                    onclick="setClipboard(event.target.value)" id="shorten-url" readonly title="Click to Copy" rsc />
+                <button onclick="copyURL('shorten-url')" class="bg-gray-200" title="Copy URL" rsc bic>
+                    <span class="material-icons">content_copy</span>
+                </button>
+                <button onclick="openURL('shorten-url')" class="bg-gray-200" title="Open in New tab" rsc bic>
+                    <span class="material-icons">open_in_new</span>
+                </button>
+            </div>
+            <div class="flex-row flex justify-center my-1">
+                <button onclick="renderQR()"
+                    class="bg-blue-500 flex flex-row justify-center text-center font-bold text-white w-full" rsc>
+                    <span class="material-icons mx-1">
+                        qr_code
+                    </span>
+                    <p>Generate QRCode</p>
+                </button>
+            </div>
+            <div id="qrcode-wrapper" class="hidden flex-col flex justify-center items-center">
+                <div id="qrcode" class="hidden flex justify-center bg-gray-200 p-2 border-1 shadow-lg rounded-md mb-1"
+                    rsc>
+                </div>
+                <div class="flex-row flex justify-center w-full">
+                    <a id="download-qrcode"
+                        class="bg-green-500 text-center font-bold text-white w-full flex flex-row justify-center" rsc>
+                        <span class="material-icons mx-1">
+                            file_download
+                        </span>
+                        <p>Download QRCode</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/assets/js/qrcode.min.js"></script>
+    <script src="/assets/js/shorturl.js"></script>
+</body>
+
+</html>
